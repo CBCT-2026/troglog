@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2"><Document><name>Japan – Places to Go</name>
+<Style id="yokai"><IconStyle><color>ffed3a7c</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="weird"><IconStyle><color>ff7727db</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="history"><IconStyle><color>ff0953b4</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="museum"><IconStyle><color>ffa16903</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="art"><IconStyle><color>ff88940d</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="nature"><IconStyle><color>ff4aa316</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="abandoned"><IconStyle><color>ff4e5357</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="spiritual"><IconStyle><color>ff2626dc</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="fun"><IconStyle><color>ff0c58ea</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="relax"><IconStyle><color>ffb29108</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="shopping"><IconStyle><color>ff048aca</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="food"><IconStyle><color>ff0da365</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Folder><name>Yokai &amp; Folklore</name>
+<Placemark><name>Yokai Yashiki (Monster &amp; Stone Museum)</name><description>Folk monsters of the Iya Valley plus the region's unique geology, at Michi-no-Eki Oboke.
+Miyoshi (Iya Valley), Tokushima</description><styleUrl>#yokai</styleUrl><Point><coordinates>133.7685,33.8746,0</coordinates></Point></Placemark>
+<Placemark><name>Sogenji (Kappa-dera Temple)</name><description>Temple dedicated to the kappa, with a mummified kappa hand.
+Asakusa, Tokyo, Tokyo</description><styleUrl>#yokai</styleUrl><Point><coordinates>139.788,35.7148,0</coordinates></Point></Placemark>
+<Placemark><name>Yokai Street (Ichijo-dori)</name><description>Shopping street lined with handmade yokai figures.
+Kyoto, Kyoto</description><styleUrl>#yokai</styleUrl><Point><coordinates>135.742,35.0258,0</coordinates></Point></Placemark>
+<Placemark><name>Miyoshi Mononoke Museum</name><description>Japan's yokai museum, built around the Inoue/Yumoto collection.
+Miyoshi, Hiroshima</description><styleUrl>#yokai</styleUrl><Point><coordinates>132.8565,34.8018,0</coordinates></Point></Placemark>
+<Placemark><name>Lake Imba Monster</name><description>Local legend of a monster in Lake Inba-numa.
+Sakura (Lake Inba), Chiba
+(approximate location)</description><styleUrl>#yokai</styleUrl><Point><coordinates>140.195,35.76,0</coordinates></Point></Placemark>
+<Placemark><name>Funato Kappa Park</name><description>Homemade kappa statues, each with its own personality.
+Lake Inba (SW shore), Chiba
+(approximate location)</description><styleUrl>#yokai</styleUrl><Point><coordinates>140.16,35.748,0</coordinates></Point></Placemark>
+<Placemark><name>Tamon-ji (Tanuki Temple)</name><description>Tanuki legend, a rare Edo-era wooden gate, survivor of the Tokyo bombings.
+Sumida, Tokyo, Tokyo</description><styleUrl>#yokai</styleUrl><Point><coordinates>139.819,35.729,0</coordinates></Point></Placemark>
+<Placemark><name>Kaiyodo Kappa Museum</name><description>Whimsical museum devoted to the cucumber-loving kappa.
+Shimanto-cho, Kochi
+(approximate location)</description><styleUrl>#yokai</styleUrl><Point><coordinates>133.028,33.204,0</coordinates></Point></Placemark>
+<Placemark><name>Yokai Art Museum</name><description>Contemporary yokai art in old warehouses on Shodoshima.
+Tonosho (Shodoshima), Kagawa
+(approximate location)</description><styleUrl>#yokai</styleUrl><Point><coordinates>134.1925,34.4865,0</coordinates></Point></Placemark>
+<Placemark><name>Kenashi Pond (Seiryu Shrine)</name><description>Pond said to be haunted by a giant white snake.
+Katsushika, Tokyo, Tokyo
+(approximate location)</description><styleUrl>#yokai</styleUrl><Point><coordinates>139.865,35.753,0</coordinates></Point></Placemark>
+<Placemark><name>Tomb of the Nue</name><description>Tomb of a chimeric monster whose corpse washed ashore in Osaka.
+Miyakojima, Osaka, Osaka</description><styleUrl>#yokai</styleUrl><Point><coordinates>135.5255,34.705,0</coordinates></Point></Placemark>
+<Placemark><name>Fukusaki Yokai (Tsujikawayama Park)</name><description>Hometown of yokai scholar Kunio Yanagita; the kappa that rises from the pond, yokai benches around town.
+Fukusaki, Hyogo</description><styleUrl>#yokai</styleUrl><Point><coordinates>134.76,34.9505,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Weird &amp; Quirky</name>
+<Placemark><name>Chaos Room</name><description>One-room museum crammed with an overwhelming array of art and objects.
+Kyoto, Kyoto
+(approximate location)</description><styleUrl>#weird</styleUrl><Point><coordinates>135.7681,35.0116,0</coordinates></Point></Placemark>
+<Placemark><name>Maishima Incineration Plant</name><description>Hundertwasser-designed waste plant that looks like a fairytale castle.
+Osaka, Osaka</description><styleUrl>#weird</styleUrl><Point><coordinates>135.4006,34.6494,0</coordinates></Point></Placemark>
+<Placemark><name>Weird Museum for Boys and Girls</name><description>Kitsch pop-culture and Showa-era oddities museum.
+Ito (Izu-kogen), Shizuoka
+(approximate location)</description><styleUrl>#weird</styleUrl><Point><coordinates>139.1255,34.9145,0</coordinates></Point></Placemark>
+<Placemark><name>Tenshou-Kyousha Shrine Mermaid Mummy</name><description>Reportedly 1,400-year-old mermaid mummy.
+Fujinomiya, Shizuoka
+(approximate location)</description><styleUrl>#weird</styleUrl><Point><coordinates>138.6,35.25,0</coordinates></Point></Placemark>
+<Placemark><name>Henn-na Hotel</name><description>Hotel run by robots, incl. dinosaur receptionists.
+Sasebo (Huis Ten Bosch), Nagasaki</description><styleUrl>#weird</styleUrl><Point><coordinates>129.788,33.086,0</coordinates></Point></Placemark>
+<Placemark><name>Tomb of Jesus Christ</name><description>Village claiming to be Jesus's final resting place.
+Shingo, Aomori</description><styleUrl>#weird</styleUrl><Point><coordinates>141.1666,40.4627,0</coordinates></Point></Placemark>
+<Placemark><name>Taiyo Park</name><description>Overgrown park full of replica world landmarks and stone figures.
+Himeji, Hyogo
+(approximate location)</description><styleUrl>#weird</styleUrl><Point><coordinates>134.649,34.888,0</coordinates></Point></Placemark>
+<Placemark><name>Doai Station</name><description>Japan's 'mole station', 462 steps underground.
+Minakami, Gunma</description><styleUrl>#weird</styleUrl><Point><coordinates>138.9653,36.8329,0</coordinates></Point></Placemark>
+<Placemark><name>Tetsugakudo Park</name><description>Philosophy-themed park founded by an occult expert.
+Nakano, Tokyo, Tokyo</description><styleUrl>#weird</styleUrl><Point><coordinates>139.6452,35.7155,0</coordinates></Point></Placemark>
+<Placemark><name>Kabosu the Doge Statue</name><description>Bronze statue of the shiba inu behind the 'Doge' meme (Sakura Furusato Hiroba).
+Sakura, Chiba</description><styleUrl>#weird</styleUrl><Point><coordinates>140.226,35.7484,0</coordinates></Point></Placemark>
+<Placemark><name>Maboroshi Hakurankai</name><description>Sprawling kitsch museum/junkyard of oddities. Check it's open before going.
+Ito (Izu-kogen), Shizuoka
+(approximate location)</description><styleUrl>#weird</styleUrl><Point><coordinates>139.105,34.939,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>History &amp; Memorials</name>
+<Placemark><name>Atomic Bomb Medical Museum</name><description>Medical effects of the Nagasaki bombing (Nagasaki University).
+Nagasaki, Nagasaki</description><styleUrl>#history</styleUrl><Point><coordinates>129.8665,32.766,0</coordinates></Point></Placemark>
+<Placemark><name>Hundred Caves of Yoshimi</name><description>Ancient hillside burial caves.
+Yoshimi, Saitama</description><styleUrl>#history</styleUrl><Point><coordinates>139.429,36.039,0</coordinates></Point></Placemark>
+<Placemark><name>Ogushi Kaizuka Park</name><description>Shell-midden park with a giant statue of the clam-eating giant Daidarabotchi.
+Mito, Ibaraki</description><styleUrl>#history</styleUrl><Point><coordinates>140.474,36.417,0</coordinates></Point></Placemark>
+<Placemark><name>Hiroshima Peace Memorial (Atomic Bomb Dome)</name><description>A-Bomb Dome, Peace Memorial Park and Museum.
+Hiroshima, Hiroshima</description><styleUrl>#history</styleUrl><Point><coordinates>132.4536,34.3955,0</coordinates></Point></Placemark>
+<Placemark><name>Nagoya Castle</name><description>Golden shachihoko and the rebuilt Honmaru Palace.
+Nagoya, Aichi</description><styleUrl>#history</styleUrl><Point><coordinates>136.8999,35.1856,0</coordinates></Point></Placemark>
+<Placemark><name>Nagoya Touken World (Samurai Museum)</name><description>Swords, armour and samurai history near Nagoya Station.
+Nakamura, Nagoya, Aichi
+(approximate location)</description><styleUrl>#history</styleUrl><Point><coordinates>136.8875,35.1735,0</coordinates></Point></Placemark>
+<Placemark><name>Tohoku History Museum</name><description>History of the Tohoku region from prehistory onward.
+Tagajo, Miyagi</description><styleUrl>#history</styleUrl><Point><coordinates>140.996,38.306,0</coordinates></Point></Placemark>
+<Placemark><name>Takayama Old Town</name><description>Edo-era merchant streets (Sanmachi), morning markets, Hida beef.
+Takayama, Gifu</description><styleUrl>#history</styleUrl><Point><coordinates>137.2595,36.1408,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Museums &amp; Collections</name>
+<Placemark><name>Cup Noodles Museum Osaka Ikeda</name><description>Make your own Cup Noodle where instant ramen was invented.
+Ikeda, Osaka</description><styleUrl>#museum</styleUrl><Point><coordinates>135.4248,34.8216,0</coordinates></Point></Placemark>
+<Placemark><name>Museum of Tropical Medicine</name><description>Specimens and history of tropical diseases (Nagasaki University).
+Nagasaki, Nagasaki</description><styleUrl>#museum</styleUrl><Point><coordinates>129.8678,32.7672,0</coordinates></Point></Placemark>
+<Placemark><name>Tobacco &amp; Salt Museum</name><description>Cultural history of tobacco and salt, once state monopolies.
+Sumida, Tokyo, Tokyo</description><styleUrl>#museum</styleUrl><Point><coordinates>139.8155,35.702,0</coordinates></Point></Placemark>
+<Placemark><name>Nima Sand Museum</name><description>Glass pyramids housing the world's largest hourglass, near singing-sand beach.
+Oda, Shimane</description><styleUrl>#museum</styleUrl><Point><coordinates>132.348,35.1125,0</coordinates></Point></Placemark>
+<Placemark><name>Hida Takayama Teddy Bear Eco Village</name><description>1,000+ teddy bears dressed for every profession.
+Takayama, Gifu</description><styleUrl>#museum</styleUrl><Point><coordinates>137.252,36.1495,0</coordinates></Point></Placemark>
+<Placemark><name>Takayama Showa-kan Museum</name><description>60 years of Showa pop culture, from Godzilla to Hulk Hogan.
+Takayama, Gifu</description><styleUrl>#museum</styleUrl><Point><coordinates>137.2565,36.1418,0</coordinates></Point></Placemark>
+<Placemark><name>Meguro Parasitological Museum</name><description>Free museum of parasites incl. an 8.8 m tapeworm.
+Meguro, Tokyo, Tokyo</description><styleUrl>#museum</styleUrl><Point><coordinates>139.7065,35.6315,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Art &amp; Galleries</name>
+<Placemark><name>Asakura Museum of Sculpture</name><description>Sculptor Asakura Fumio's house, studio and rooftop garden.
+Yanaka, Tokyo, Tokyo</description><styleUrl>#art</styleUrl><Point><coordinates>139.769,35.727,0</coordinates></Point></Placemark>
+<Placemark><name>Pokémon × Kōgei (at Tohoku History Museum)</name><description>Pokémon x traditional crafts exhibition — final Japan venue, 10 Oct – 27 Dec 2026.
+Tagajo, Miyagi</description><styleUrl>#art</styleUrl><Point><coordinates>140.9972,38.3068,0</coordinates></Point></Placemark>
+<Placemark><name>Hikaru Museum</name><description>Art museum with Egyptian-style architecture and Japanese &amp; Western works.
+Takayama, Gifu</description><styleUrl>#art</styleUrl><Point><coordinates>137.2395,36.153,0</coordinates></Point></Placemark>
+<Placemark><name>Tokugawa Art Museum</name><description>Owari Tokugawa treasures incl. Tale of Genji scrolls; Tokugawa-en garden next door.
+Nagoya, Aichi</description><styleUrl>#art</styleUrl><Point><coordinates>136.9335,35.1845,0</coordinates></Point></Placemark>
+<Placemark><name>Naoshima (Art Island)</name><description>Chichu Art Museum, Benesse House, Art House Project, Kusama's pumpkins.
+Naoshima, Kagawa</description><styleUrl>#art</styleUrl><Point><coordinates>133.995,34.46,0</coordinates></Point></Placemark>
+<Placemark><name>National Museum of Modern Art, Tokyo (MOMAT)</name><description>Japan's leading modern art collection, by the Imperial Palace moat.
+Chiyoda, Tokyo, Tokyo</description><styleUrl>#art</styleUrl><Point><coordinates>139.7546,35.6905,0</coordinates></Point></Placemark>
+<Placemark><name>Nagoya City Art Museum</name><description>Kisho Kurokawa building in Shirakawa Park (with the Science Museum).
+Naka, Nagoya, Aichi</description><styleUrl>#art</styleUrl><Point><coordinates>136.8985,35.164,0</coordinates></Point></Placemark>
+<Placemark><name>Matsuzakaya Art Museum</name><description>Exhibition space in Matsuzakaya Nagoya department store.
+Sakae, Nagoya, Aichi
+(approximate location)</description><styleUrl>#art</styleUrl><Point><coordinates>136.9065,35.165,0</coordinates></Point></Placemark>
+<Placemark><name>TODAYS GALLERY STUDIO. NAGOYA</name><description>Pop-up exhibition gallery (1-17-12 Shinsakae). Check what's showing.
+Shinsakae, Nagoya, Aichi</description><styleUrl>#art</styleUrl><Point><coordinates>136.9215,35.1695,0</coordinates></Point></Placemark>
+<Placemark><name>Injuma Art House Project (a-art house)</name><description>Couldn't verify the exact venue — drag the pin to the right spot.
+Nagoya, Aichi
+(approximate location)</description><styleUrl>#art</styleUrl><Point><coordinates>136.905,35.17,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Nature, Animals &amp; Islands</name>
+<Placemark><name>Ashizuri Underwater Observation Tower</name><description>Tower that lets you walk down below the waves to watch coral and fish.
+Tosashimizu, Kochi</description><styleUrl>#nature</styleUrl><Point><coordinates>132.864,32.7835,0</coordinates></Point></Placemark>
+<Placemark><name>Ryusendo Cave</name><description>Limestone cave with some of the clearest underground lakes in the world.
+Iwaizumi, Iwate</description><styleUrl>#nature</styleUrl><Point><coordinates>141.795,39.8497,0</coordinates></Point></Placemark>
+<Placemark><name>Okunoshima (Rabbit Island)</name><description>Island overrun by friendly rabbits; also a WWII poison-gas museum.
+Takehara, Hiroshima</description><styleUrl>#nature</styleUrl><Point><coordinates>132.9946,34.3087,0</coordinates></Point></Placemark>
+<Placemark><name>Jigokudani Monkey Park</name><description>Snow monkeys bathing in hot springs (best in winter).
+Yamanouchi, Nagano</description><styleUrl>#nature</styleUrl><Point><coordinates>138.4622,36.7326,0</coordinates></Point></Placemark>
+<Placemark><name>Sagano (Arashiyama) Bamboo Forest</name><description>Towering bamboo grove; go at sunrise to beat the crowds.
+Kyoto, Kyoto</description><styleUrl>#nature</styleUrl><Point><coordinates>135.6719,35.017,0</coordinates></Point></Placemark>
+<Placemark><name>Mount Tanigawa</name><description>Beautiful but notoriously deadly mountain; take the ropeway for views.
+Minakami, Gunma</description><styleUrl>#nature</styleUrl><Point><coordinates>138.9297,36.8374,0</coordinates></Point></Placemark>
+<Placemark><name>Ishigaki Island</name><description>Kabira Bay, manta snorkelling, gateway to the Yaeyama islands.
+Ishigaki, Okinawa</description><styleUrl>#nature</styleUrl><Point><coordinates>124.1754,24.4064,0</coordinates></Point></Placemark>
+<Placemark><name>Monet's Pond (Nemichi Shrine pond)</name><description>Clear spring pond with koi that looks like Monet's Water Lilies.
+Seki, Gifu</description><styleUrl>#nature</styleUrl><Point><coordinates>136.835,35.643,0</coordinates></Point></Placemark>
+<Placemark><name>Meiho Ski Resort</name><description>Ski resort in Gujo (winter).
+Gujo, Gifu
+(approximate location)</description><styleUrl>#nature</styleUrl><Point><coordinates>137.044,35.919,0</coordinates></Point></Placemark>
+<Placemark><name>Higashiyama Zoo &amp; Botanical Gardens</name><description>Big zoo (Shabani the gorilla) and botanical gardens.
+Chikusa, Nagoya, Aichi</description><styleUrl>#nature</styleUrl><Point><coordinates>136.9775,35.156,0</coordinates></Point></Placemark>
+<Placemark><name>Showa-Shinzan Bear Ranch</name><description>Brown bear park beside the Showa-Shinzan lava dome near Lake Toya.
+Sobetsu, Hokkaido</description><styleUrl>#nature</styleUrl><Point><coordinates>140.867,42.548,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Abandoned &amp; Ruins</name>
+<Placemark><name>Abandoned Western Village</name><description>Derelict Wild-West theme park full of decaying animatronic cowboys. Check access rules; don't trespass.
+Nikko, Tochigi
+(approximate location)</description><styleUrl>#abandoned</styleUrl><Point><coordinates>139.704,36.756,0</coordinates></Point></Placemark>
+<Placemark><name>Gunkanjima (Hashima Island)</name><description>Abandoned coal-mining island city; visit by boat tour.
+Nagasaki, Nagasaki</description><styleUrl>#abandoned</styleUrl><Point><coordinates>129.7385,32.6277,0</coordinates></Point></Placemark>
+<Placemark><name>Hachijo Royal Hotel (abandoned)</name><description>Japan's largest abandoned hotel on remote Hachijo island. Exterior only.
+Hachijojima, Tokyo</description><styleUrl>#abandoned</styleUrl><Point><coordinates>139.7935,33.1105,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Temples &amp; Shrines</name>
+<Placemark><name>Dainichibo Temple (Sokushinbutsu)</name><description>Temple housing a self-mummified Buddhist monk.
+Tsuruoka, Yamagata</description><styleUrl>#spiritual</styleUrl><Point><coordinates>139.889,38.5806,0</coordinates></Point></Placemark>
+<Placemark><name>Mount Osore (Osorezan Bodaiji)</name><description>Volcanic 'gateway to the underworld' temple. Open May–Oct.
+Mutsu, Aomori</description><styleUrl>#spiritual</styleUrl><Point><coordinates>141.089,41.327,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Theme Parks &amp; Entertainment</name>
+<Placemark><name>Sanrio Puroland</name><description>Indoor Hello Kitty theme park.
+Tama, Tokyo, Tokyo</description><styleUrl>#fun</styleUrl><Point><coordinates>139.4285,35.6247,0</coordinates></Point></Placemark>
+<Placemark><name>Little World Museum of Man</name><description>Open-air anthropology theme park with buildings and food from ~20 countries.
+Inuyama, Aichi</description><styleUrl>#fun</styleUrl><Point><coordinates>137.0138,35.3285,0</coordinates></Point></Placemark>
+<Placemark><name>Immersive Journey Nagoya</name><description>Immersive digital-art/VR venue, Skyle 10F, Sakae (opened Jan 2026).
+Sakae, Nagoya, Aichi</description><styleUrl>#fun</styleUrl><Point><coordinates>136.907,35.168,0</coordinates></Point></Placemark>
+<Placemark><name>Nagashima Spa Land</name><description>Roller-coaster theme park plus the huge Yuami-no-Shima onsen.
+Kuwana, Mie</description><styleUrl>#fun</styleUrl><Point><coordinates>136.733,35.031,0</coordinates></Point></Placemark>
+<Placemark><name>X-Gold Club Nagoya Johoku</name><description>Couldn't verify the exact venue — drag the pin to the right spot.
+Nagoya (Johoku), Aichi
+(approximate location)</description><styleUrl>#fun</styleUrl><Point><coordinates>136.89,35.2,0</coordinates></Point></Placemark>
+<Placemark><name>TOHO Cinemas Nagoya Sakae</name><description>10-screen cinema in The Landmark Nagoya Sakae, 5F (opened June 2026).
+Sakae, Nagoya, Aichi</description><styleUrl>#fun</styleUrl><Point><coordinates>136.9068,35.1708,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Onsen &amp; Spa</name>
+<Placemark><name>Radium Onsen</name><description>Old bathhouse with an option to soak in (mildly) radioactive water.
+Osaka, Osaka
+(approximate location)</description><styleUrl>#relax</styleUrl><Point><coordinates>135.5,34.69,0</coordinates></Point></Placemark>
+<Placemark><name>RAKU SPA GARDEN Nagoya</name><description>Large spa with natural hot spring and bedrock baths.
+Meito, Nagoya, Aichi
+(approximate location)</description><styleUrl>#relax</styleUrl><Point><coordinates>137.0225,35.1695,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Shopping &amp; Pop Culture</name>
+<Placemark><name>Akihabara Electric Town</name><description>Electronics, anime, manga and retro games.
+Tokyo, Tokyo</description><styleUrl>#shopping</styleUrl><Point><coordinates>139.7731,35.6984,0</coordinates></Point></Placemark>
+<Placemark><name>Nawate Dori (Frog Street)</name><description>Riverside street of frog statues, stalls and a frog shrine.
+Matsumoto, Nagano</description><styleUrl>#shopping</styleUrl><Point><coordinates>137.9705,36.2335,0</coordinates></Point></Placemark>
+<Placemark><name>Kappabashi Sampuru Shops</name><description>'Kitchen Town' with shops selling realistic plastic food replicas.
+Taito, Tokyo, Tokyo</description><styleUrl>#shopping</styleUrl><Point><coordinates>139.7885,35.713,0</coordinates></Point></Placemark>
+<Placemark><name>Green Thumb</name><description>Herbal teas, cosmetics and 'kitchen witch' dolls.
+Yokohama, Kanagawa
+(approximate location)</description><styleUrl>#shopping</styleUrl><Point><coordinates>139.649,35.4415,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Food &amp; Drink</name>
+<Placemark><name>Sanatorium – Wonder Museum Annex</name><description>Tuberculosis-sanatorium-themed cafe doubling as an underground gallery.
+Fukuoka, Fukuoka
+(approximate location)</description><styleUrl>#food</styleUrl><Point><coordinates>130.395,33.588,0</coordinates></Point></Placemark>
+<Placemark><name>Grano Grano (APITA Chiyodabashi)</name><description>In-store bakery inside APITA Chiyodabashi.
+Chikusa, Nagoya, Aichi</description><styleUrl>#food</styleUrl><Point><coordinates>136.9585,35.1915,0</coordinates></Point></Placemark>
+<Placemark><name>Sushiro Nagoya Shinsakae</name><description>Conveyor-belt sushi.
+Shinsakae, Nagoya, Aichi
+(approximate location)</description><styleUrl>#food</styleUrl><Point><coordinates>136.923,35.1685,0</coordinates></Point></Placemark>
+</Folder>
+</Document></kml>

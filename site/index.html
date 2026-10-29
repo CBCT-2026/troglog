@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Troglog</title>
+<meta name="description" content="A troglodyte's log of places explored and places to go.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦇</text></svg>">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand" title="A troglodyte's log of places explored">🦇 <span>Troglog</span></div>
+  <div class="progress" id="progress" title="Visited / total"></div>
+  <nav class="actions">
+    <button id="btnAdd" class="primary">＋ Add place</button>
+    <button id="btnJournal">📔 Journal</button>
+    <button id="btnStats">📊 Overview</button>
+    <button id="btnBackup">💾 Backup</button>
+  </nav>
+</header>
+
+<main class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="filters">
+      <input id="search" type="search" placeholder="Search name, city, note…" autocomplete="off">
+      <div class="seg" id="statusFilter">
+        <button data-v="all" class="on">All</button>
+        <button data-v="want">⭐ Want</button>
+        <button data-v="visited">✅ Visited</button>
+        <button data-v="todo">Not visited</button>
+      </div>
+      <div class="row">
+        <select id="countryFilter"><option value="">All countries</option></select>
+        <select id="cityFilter"><option value="">All cities / areas</option></select>
+      </div>
+      <div class="chips" id="catFilter"></div>
+    </div>
+    <div class="count" id="count"></div>
+    <ul class="list" id="list"></ul>
+  </aside>
+
+  <section class="mapwrap">
+    <div id="map"></div>
+    <button class="mobile-toggle" id="mobileToggle">☰ List</button>
+    <div class="add-hint" id="addHint" hidden>Click the map to drop a pin, or <button id="cancelAdd">cancel</button></div>
+  </section>
+
+  <aside class="detail" id="detail" hidden></aside>
+</main>
+
+<dialog id="modal"><div class="modal-body" id="modalBody"></div></dialog>
+<input type="file" id="photoInput" accept="image/*" multiple hidden>
+<input type="file" id="importInput" accept="application/json,.json" hidden>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="places.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
