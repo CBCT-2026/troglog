@@ -1,5 +1,6 @@
-/* Troglog — everything personal (ticks, reviews, photos) stays in this browser.
-   Text state lives in localStorage; photos live in IndexedDB. Use Backup to move devices. */
+/* Troglog — everything personal (ticks, reviews, photos) is kept in this browser.
+   Text state lives in localStorage; photos live in IndexedDB. Use Backup to move devices,
+   or sign in to private sync (sync.js) to keep every device up to date automatically. */
 (() => {
   const CATS = window.CATEGORIES;
   const OTHER = { label: "Other", color: "#64748b", icon: "📍" };
@@ -9,17 +10,29 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   // ---------- state ----------
-  // user[id] = { want, visited, rating, date, review, lat, lng }   custom = [place]   hidden = [seed ids]
+  // user[id] = { want, visited, rating, date, review, tags, lat, lng, t }   custom = [place]   hidden = [seed ids]
+  // trips = [{ id, name, date, ids, t }]   tomb = ids deleted on this device, so sync doesn't bring them back
+  // t / hiddenT = last-change timestamps, used to merge devices (newest wins per place)
+  const blank = () => ({ user: {}, custom: [], hidden: [], hiddenT: 0, trips: [], tomb: { custom: [], trips: [], photos: [] } });
   let state = load();
   function load() {
-    try { return { user: {}, custom: [], hidden: [], ...JSON.parse(localStorage.getItem(STORE_KEY) || "{}") }; }
-    catch { return { user: {}, custom: [], hidden: [] }; }
+    try { return normalize(JSON.parse(localStorage.getItem(STORE_KEY) || "{}")); }
+    catch { return blank(); }
   }
+  function normalize(s) { const b = blank(); return { ...b, ...s, tomb: { ...b.tomb, ...(s.tomb || {}) } }; }
   function save() {
     try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); flashSaved(); }
     catch (e) { alert("Couldn't save — browser storage may be full or blocked.\n" + e.message); }
+    window.TroglogSync?.changed();
   }
-  const u = (id) => (state.user[id] ||= {});
+  // Every write goes through u(), so it stamps the entry for sync merging.
+  const u = (id) => { const x = (state.user[id] ||= {}); x.t = Date.now(); return x; };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  // Seed places marked want:true start ticked; t:0 so any real edit (on any device) wins.
+  function seedDefaults() {
+    window.SEED_PLACES.forEach((p) => { if (p.want && !state.user[p.id]) state.user[p.id] = { want: true, t: 0 }; });
+  }
+  seedDefaults();
 
   function allPlaces() {
     const hidden = new Set(state.hidden);
@@ -48,8 +61,13 @@
   }
   const photosFor = (placeId) => tx("readonly", (s) => s.index("placeId").getAll(placeId));
   const allPhotos = () => tx("readonly", (s) => s.getAll());
-  const addPhoto = (rec) => tx("readwrite", (s) => s.add(rec));
-  const delPhoto = (id) => tx("readwrite", (s) => s.delete(id));
+  const addPhoto = (rec) => tx("readwrite", (s) => s.add({ pid: uid(), ...rec }));
+  const putPhoto = (rec) => tx("readwrite", (s) => s.put(rec));
+  const delPhoto = async (id) => {
+    const r = await tx("readonly", (s) => s.get(id));
+    if (r?.pid) { state.tomb.photos.push(r.pid); save(); }
+    return tx("readwrite", (s) => s.delete(id));
+  };
   const clearPhotos = () => tx("readwrite", (s) => s.clear());
 
   // Shrink big phone photos so storage and backups stay manageable.
@@ -72,7 +90,8 @@
   const dataURLToBlob = (d) => fetch(d).then((r) => r.blob());
 
   // ---------- filters ----------
-  const filt = { q: "", status: "all", country: "", city: "", cats: new Set(Object.keys(CATS).concat("other")) };
+  const filt = { q: "", status: "all", country: "", city: "", tag: "", sort: "name", cats: new Set(Object.keys(CATS).concat("other")) };
+  let here = null; // { lat, lng } once "Near me" has a location
   function matches(p) {
     const x = state.user[p.id] || {};
     if (filt.status === "want" && !x.want) return false;
@@ -80,14 +99,25 @@
     if (filt.status === "todo" && x.visited) return false;
     if (filt.country && p.country !== filt.country) return false;
     if (filt.city && cityKey(p) !== filt.city) return false;
+    if (filt.tag && !(x.tags || []).includes(filt.tag)) return false;
     if (!filt.cats.has(CATS[p.category] ? p.category : "other")) return false;
     if (filt.q) {
-      const hay = [p.name, p.city, p.prefecture, p.country, p.note, x.review].join(" ").toLowerCase();
+      const hay = [p.name, p.city, p.prefecture, p.country, p.note, x.review, ...(x.tags || [])].join(" ").toLowerCase();
       if (!hay.includes(filt.q)) return false;
     }
     return true;
   }
   const cityKey = (p) => (p.city || "").split(/[,(]/)[0].trim() || p.prefecture || "—";
+  const allTags = () => [...new Set(Object.values(state.user).flatMap((x) => x.tags || []))].sort();
+  const TAG_IDEAS = ["with friends", "solo", "date", "rainy day", "go back", "must see", "kid-friendly", "day trip"];
+
+  // Great-circle distance in km
+  function km(a, b) {
+    const r = Math.PI / 180, dLat = (b.lat - a.lat) * r, dLng = (b.lng - a.lng) * r;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLng / 2) ** 2;
+    return 12742 * Math.asin(Math.sqrt(h));
+  }
+  const fmtKm = (d) => (d < 1 ? `${Math.round(d * 1000)} m` : d < 20 ? `${d.toFixed(1)} km` : `${Math.round(d)} km`);
 
   function buildFilterUI() {
     const places = allPlaces();
@@ -96,6 +126,10 @@
     const cities = [...new Set(places.filter((p) => !filt.country || p.country === filt.country).map(cityKey))].sort();
     if (!cities.includes(filt.city)) filt.city = "";
     $("#cityFilter").innerHTML = `<option value="">All cities / areas</option>` + cities.map((c) => `<option ${c === filt.city ? "selected" : ""}>${esc(c)}</option>`).join("");
+    const tags = allTags();
+    if (!tags.includes(filt.tag)) filt.tag = "";
+    $("#tagFilter").hidden = !tags.length;
+    $("#tagFilter").innerHTML = `<option value="">All tags</option>` + tags.map((t) => `<option ${t === filt.tag ? "selected" : ""}>${esc(t)}</option>`).join("");
     const counts = {};
     places.forEach((p) => { const k = CATS[p.category] ? p.category : "other"; counts[k] = (counts[k] || 0) + 1; });
     $("#catFilter").innerHTML = Object.entries({ ...CATS, other: OTHER }).filter(([k]) => counts[k])
@@ -149,13 +183,15 @@
   let selected = null;
   function render() {
     const places = allPlaces();
-    const list = places.filter(matches).sort((a, b) => a.name.localeCompare(b.name));
-    $("#count").textContent = `${list.length} of ${places.length} places`;
+    const list = places.filter(matches);
+    if (filt.sort === "near" && here) list.forEach((p) => (p.dist = km(here, p)));
+    list.sort(filt.sort === "near" && here ? (a, b) => a.dist - b.dist : (a, b) => a.name.localeCompare(b.name));
+    $("#count").textContent = `${list.length} of ${places.length} places${filt.sort === "near" && here ? " · nearest first" : ""}`;
     $("#list").innerHTML = list.map((p) => {
       const x = state.user[p.id] || {};
       return `<li data-id="${p.id}" class="${p.id === selected ? "sel" : ""}">
         <span class="dot" style="background:${cat(p.category).color}" title="${esc(cat(p.category).label)}"></span>
-        <div><div class="name">${esc(p.name)}</div><div class="sub">${esc(p.city)}${p.country !== "Japan" ? ", " + esc(p.country) : ""}${x.rating ? " · " + "★".repeat(x.rating) : ""}</div></div>
+        <div><div class="name">${esc(p.name)}</div><div class="sub">${p.dist != null ? `<b>${fmtKm(p.dist)}</b> · ` : ""}${esc(p.city)}${p.country !== "Japan" ? ", " + esc(p.country) : ""}${x.rating ? " · " + "★".repeat(x.rating) : ""}${(x.tags || []).map((t) => ` <span class="tag">${esc(t)}</span>`).join("")}</div></div>
         <div class="checks">
           <label title="Want to go"><input type="checkbox" class="want" data-f="want" ${x.want ? "checked" : ""}>want</label>
           <label title="Visited"><input type="checkbox" data-f="visited" ${x.visited ? "checked" : ""}>been</label>
@@ -208,7 +244,15 @@
       <section><label class="lbl">Journal / review (private)</label>
         <textarea id="fReview" placeholder="What was it like? What would you tell future you?">${esc(x.review || "")}</textarea>
         <div class="saved" id="savedMsg"></div></section>
-      <section><label class="lbl">Photos</label><div class="photos" id="photoGrid"></div></section>
+      <section><label class="lbl">Tags</label>
+        <div class="tags">${(x.tags || []).map((t) => `<span class="tag">${esc(t)}<button data-untag="${esc(t)}" title="Remove tag">✕</button></span>`).join("")}
+          <input type="text" id="fTag" list="tagIdeas" placeholder="＋ tag, e.g. with friends" enterkeyhint="done">
+          <datalist id="tagIdeas">${[...new Set([...allTags(), ...TAG_IDEAS])].filter((t) => !(x.tags || []).includes(t)).map((t) => `<option value="${esc(t)}">`).join("")}</datalist></div></section>
+      <section><label class="lbl">Photos</label><div class="photos" id="photoGrid"></div>
+        <div class="hint">Photo dates and locations are read automatically when the photo has them.</div></section>
+      <section><label class="lbl">Day trips</label>
+        <div class="links">${state.trips.filter((t) => t.ids.includes(id)).map((t) => `<button data-opentrip="${t.id}">🗓 ${esc(t.name)}</button>`).join("")}
+          <select id="fTrip"><option value="">＋ Add to a trip…</option>${state.trips.filter((t) => !t.ids.includes(id)).map((t) => `<option value="${t.id}">${esc(t.name)}</option>`).join("")}<option value="new">New trip…</option></select></div></section>
       <section class="links">
         <a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Google Maps ↗</a>
         <a target="_blank" rel="noopener" href="https://maps.apple.com/?q=${encodeURIComponent(p.name)}&ll=${p.lat},${p.lng}">Apple Maps ↗</a>
@@ -243,8 +287,10 @@
   }
 
   det.addEventListener("click", async (e) => {
-    const t = e.target.closest("[data-act],[data-star],[data-del],[data-full]"); if (!t || !selected) return;
+    const t = e.target.closest("[data-act],[data-star],[data-del],[data-full],[data-untag],[data-opentrip]"); if (!t || !selected) return;
     const id = selected;
+    if (t.dataset.untag) { const x = u(id); x.tags = (x.tags || []).filter((g) => g !== t.dataset.untag); save(); buildFilterUI(); openDetail(id); render(); return; }
+    if (t.dataset.opentrip) { openTrip(t.dataset.opentrip); return; }
     if (t.dataset.star) { const n = +t.dataset.star; u(id).rating = u(id).rating === n ? 0 : n; save(); openDetail(id); render(); return; }
     if (t.dataset.del) { if (confirm("Remove this photo?")) { await delPhoto(+t.dataset.del); renderPhotos(id); } return; }
     if (t.dataset.full) { lightbox(t.src); return; }
@@ -257,11 +303,11 @@
       case "remove":
         if (id.startsWith("u-")) {
           if (!confirm("Delete this place, its review and photos?")) return;
-          state.custom = state.custom.filter((p) => p.id !== id); delete state.user[id];
+          state.custom = state.custom.filter((p) => p.id !== id); delete state.user[id]; state.tomb.custom.push(id);
           for (const r of await photosFor(id)) await delPhoto(r.id);
         } else {
           if (!confirm("Hide this place? (You can restore hidden places from Backup.)")) return;
-          state.hidden.push(id);
+          state.hidden.push(id); state.hiddenT = Date.now();
         }
         save(); det.hidden = true; selected = null; buildFilterUI(); render(); break;
     }
@@ -271,15 +317,97 @@
     if (e.target.id === "fReview") { clearTimeout(saveTimer); saveTimer = setTimeout(() => { u(selected).review = e.target.value; save(); }, 400); }
     if (e.target.id === "fDate") { u(selected).date = e.target.value; save(); }
   });
+  det.addEventListener("change", (e) => {
+    if (!selected) return;
+    const id = selected;
+    if (e.target.id === "fTag") addTag(id, e.target.value);
+    if (e.target.id === "fTrip" && e.target.value) {
+      let trip = state.trips.find((t) => t.id === e.target.value);
+      if (e.target.value === "new") {
+        const name = prompt("Name this day trip:", `${byId(id)?.city || "Day"} trip`); if (!name) { e.target.value = ""; return; }
+        trip = { id: "t-" + uid(), name, date: "", ids: [], t: 0 }; state.trips.push(trip);
+      }
+      trip.ids.push(id); trip.t = Date.now(); save(); openDetail(id); drawTrip(trip);
+    }
+  });
+  det.addEventListener("keydown", (e) => { if (e.target.id === "fTag" && e.key === "Enter") { e.preventDefault(); addTag(selected, e.target.value); } });
+  function addTag(id, raw) {
+    const tag = raw.trim().toLowerCase(); if (!tag) return;
+    const x = u(id); x.tags = [...new Set([...(x.tags || []), tag])]; save(); buildFilterUI(); render(); openDetail(id);
+    setTimeout(() => $("#fTag")?.focus(), 0);
+  }
 
   $("#photoInput").addEventListener("change", async (e) => {
     const id = selected; const files = [...e.target.files]; e.target.value = "";
+    if (pendingPhotoFor) { const cb = pendingPhotoFor; pendingPhotoFor = null; return cb(files); }
+    let first = null;
     for (const f of files) {
-      try { await addPhoto({ placeId: id, blob: await compress(f), caption: f.name, added: Date.now() }); }
-      catch (err) { alert(err.message); }
+      try {
+        const ex = await readExif(f);
+        await addPhoto({ placeId: id, blob: await compress(f), caption: f.name, added: Date.now(), takenAt: ex.date || null, lat: ex.lat ?? null, lng: ex.lng ?? null });
+        first ||= ex;
+      } catch (err) { alert(err.message); }
     }
+    await applyPhotoInfo(id, first || {});
     renderPhotos(id);
   });
+
+  // Use a photo's EXIF to fill in the visit date, and to fix an approximate pin.
+  async function applyPhotoInfo(id, ex) {
+    const p = byId(id); const x = state.user[id] || {};
+    let changed = false;
+    if (ex.date && !x.date) { u(id).date = ex.date; changed = true; }
+    else if (ex.date && x.date !== ex.date && confirm(`This photo was taken on ${ex.date}. Use that as the visit date (currently ${x.date})?`)) { u(id).date = ex.date; changed = true; }
+    if (ex.lat != null && p) {
+      const d = km(p, ex);
+      if (d > 0.3 && d < 50 && (p.approx || p.source === "custom") && confirm(`This photo was taken ${fmtKm(d)} from the pin. Move the pin to where the photo was taken?`)) {
+        const y = u(id); y.lat = +ex.lat.toFixed(6); y.lng = +ex.lng.toFixed(6); changed = true;
+      }
+    }
+    if (changed) { save(); render(); openDetail(id); }
+  }
+
+  // Minimal EXIF reader for JPEGs: DateTimeOriginal and GPS. Returns {} when absent (HEIC, stripped, PNG…).
+  async function readExif(file) {
+    try {
+      const v = new DataView(await file.slice(0, 256 * 1024).arrayBuffer());
+      if (v.getUint16(0) !== 0xffd8) return {};
+      let o = 2;
+      while (o + 4 < v.byteLength) {
+        const mk = v.getUint16(o), len = v.getUint16(o + 2);
+        if (mk === 0xffe1 && v.getUint32(o + 4) === 0x45786966) return parseTiff(v, o + 10);
+        if ((mk & 0xff00) !== 0xff00) break;
+        o += 2 + len;
+      }
+    } catch {}
+    return {};
+  }
+  function parseTiff(v, t) {
+    const le = v.getUint16(t) === 0x4949;
+    const g16 = (o) => v.getUint16(o, le), g32 = (o) => v.getUint32(o, le);
+    const ifd = (o) => { const n = g16(t + o), m = {}; for (let i = 0; i < n; i++) { const e = t + o + 2 + i * 12; m[g16(e)] = e; } return m; };
+    const str = (e) => { const n = g32(e + 4), o = n > 4 ? t + g32(e + 8) : e + 8; let s = ""; for (let i = 0; i < n - 1; i++) s += String.fromCharCode(v.getUint8(o + i)); return s; };
+    const rats = (e) => { const o = t + g32(e + 8); return [0, 1, 2].map((i) => g32(o + i * 8) / g32(o + i * 8 + 4)); };
+    const out = {};
+    const ifd0 = ifd(g32(t + 4));
+    if (ifd0[0x8769]) {
+      const ex = ifd(g32(ifd0[0x8769] + 8));
+      const dt = ex[0x9003] ? str(ex[0x9003]) : ifd0[0x0132] ? str(ifd0[0x0132]) : "";
+      const m = dt.match(/^(\d{4}):(\d\d):(\d\d)/); if (m && m[1] !== "0000") out.date = `${m[1]}-${m[2]}-${m[3]}`;
+    }
+    if (ifd0[0x8825]) {
+      const gp = ifd(g32(ifd0[0x8825] + 8));
+      if (gp[2] && gp[4]) {
+        const dms = (a) => a[0] + a[1] / 60 + a[2] / 3600;
+        let lat = dms(rats(gp[2])), lng = dms(rats(gp[4]));
+        if (gp[1] && str(gp[1]) === "S") lat = -lat;
+        if (gp[3] && str(gp[3]) === "W") lng = -lng;
+        if (isFinite(lat) && isFinite(lng) && (lat || lng)) { out.lat = lat; out.lng = lng; }
+      }
+    }
+    return out;
+  }
+  let pendingPhotoFor = null; // set when the Add-place form asks for a photo
 
   function lightbox(src) {
     const d = document.createElement("div"); d.className = "lightbox"; d.innerHTML = `<img src="${src}">`;
@@ -314,7 +442,8 @@
         <div><label class="lbl">Find on map (worldwide search)</label>
           <div class="row" style="grid-template-columns:1fr auto"><input type="text" id="geoQ" placeholder="e.g. Louvre Paris, Bondi Beach…"><button id="geoGo">Search</button></div>
           <ul class="geo-results" id="geoRes"></ul>
-          <button id="pickMap">…or click on the map instead</button></div>
+          <button id="pickMap">…or click on the map instead</button> <button id="fromPhoto">📷 …or use a photo's location</button>
+          <div class="hint" id="photoHint"></div></div>
         <div><label class="lbl">Name</label><input type="text" id="aName" value="${esc(pre.name || "")}"></div>
         <div class="row"><div><label class="lbl">City / area</label><input type="text" id="aCity" value="${esc(pre.city || "")}"></div>
           <div><label class="lbl">Country</label><input type="text" id="aCountry" value="${esc(pre.country || "")}"></div></div>
@@ -344,15 +473,40 @@
     $("#geoGo").onclick = search;
     $("#geoQ").onkeydown = (e) => { if (e.key === "Enter") search(); };
     $("#pickMap").onclick = () => { closeModal(); adding = true; $("#addHint").hidden = false; };
+    let carried = [];
+    $("#fromPhoto").onclick = () => {
+      pendingPhotoFor = async (files) => {
+        const ex = await readExif(files[0]);
+        if (ex.lat == null) { $("#photoHint").textContent = "That photo has no location saved in it — search or click the map instead."; return; }
+        carried = files;
+        $("#aLat").value = ex.lat.toFixed(6); $("#aLng").value = ex.lng.toFixed(6);
+        $("#photoHint").textContent = `📍 Location found${ex.date ? `, taken ${ex.date}` : ""}. The photo will be attached when you save.`;
+        if (ex.date) { $("#aVisited").checked = true; $("#aWant").checked = false; }
+        try {
+          const r = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&addressdetails=1&accept-language=en&lat=${ex.lat}&lon=${ex.lng}`).then((r) => r.json());
+          fill({ ...r, lat: ex.lat, lon: ex.lng });
+        } catch {}
+      };
+      $("#photoInput").click();
+    };
     $("#aSave").onclick = () => {
       const lat = parseFloat($("#aLat").value), lng = parseFloat($("#aLng").value), name = $("#aName").value.trim();
       if (!name || isNaN(lat) || isNaN(lng)) return alert("Need a name and a location (search or click the map).");
       const id = "u-" + Date.now().toString(36);
       state.custom.push({ id, name, city: $("#aCity").value.trim(), prefecture: "", country: $("#aCountry").value.trim() || "Unknown",
-        lat, lng, category: $("#aCat").value, note: $("#aNote").value.trim(), source: "custom", approx: false });
+        lat, lng, category: $("#aCat").value, note: $("#aNote").value.trim(), source: "custom", approx: false, t: Date.now() });
       const x = u(id); x.want = $("#aWant").checked; x.visited = $("#aVisited").checked;
       if (x.visited) x.date = new Date().toISOString().slice(0, 10);
       save(); closeModal(); buildFilterUI(); render(); openDetail(id);
+      (async () => {
+        let first = null;
+        for (const f of carried) {
+          const ex = await readExif(f);
+          await addPhoto({ placeId: id, blob: await compress(f), caption: f.name, added: Date.now(), takenAt: ex.date || null, lat: ex.lat ?? null, lng: ex.lng ?? null });
+          first ||= ex;
+        }
+        if (first?.date) { u(id).date = first.date; save(); openDetail(id); } else if (carried.length) renderPhotos(id);
+      })();
     };
   }
 
@@ -395,6 +549,78 @@
     $("#ovAll").onclick = () => { closeModal(); const b = L.latLngBounds(places.map((p) => [p.lat, p.lng])); map.fitBounds(b.pad(0.1)); };
   };
 
+  // ---------- day trips ----------
+  const tripLayer = L.layerGroup().addTo(map);
+  const tripCtl = L.control({ position: "topleft" });
+  tripCtl.onAdd = () => { const b = L.DomUtil.create("button", "trip-ctl"); b.hidden = true; b.onclick = () => clearTrip(); L.DomEvent.disableClickPropagation(b); return b; };
+  tripCtl.addTo(map);
+  const tripPlaces = (t) => t.ids.map(byId).filter(Boolean);
+  const tripKm = (ps) => ps.slice(1).reduce((d, p, i) => d + km(ps[i], p), 0);
+  function clearTrip() { tripLayer.clearLayers(); tripCtl.getContainer().hidden = true; }
+  function drawTrip(t) {
+    tripLayer.clearLayers();
+    const ps = tripPlaces(t); if (!ps.length) return clearTrip();
+    L.polyline(ps.map((p) => [p.lat, p.lng]), { color: "#dc2626", weight: 4, opacity: 0.8, dashArray: "8 6" }).addTo(tripLayer);
+    ps.forEach((p, i) => L.marker([p.lat, p.lng], { icon: L.divIcon({ className: "", html: `<div class="stop"><span>${i + 1}</span></div>`, iconSize: [24, 24], iconAnchor: [12, 30] }), zIndexOffset: 2000 })
+      .on("click", () => openDetail(p.id)).addTo(tripLayer));
+    const c = tripCtl.getContainer(); c.hidden = false; c.textContent = `🗓 ${t.name} · ${fmtKm(tripKm(ps))} ✕`;
+    map.fitBounds(L.latLngBounds(ps.map((p) => [p.lat, p.lng])).pad(0.25), { maxZoom: 14 });
+  }
+  function gmapsRoute(ps) {
+    const ll = (p) => `${p.lat},${p.lng}`;
+    const mid = ps.slice(1, -1).slice(0, 9).map(ll).join("|");
+    return `https://www.google.com/maps/dir/?api=1&origin=${ll(ps[0])}&destination=${ll(ps[ps.length - 1])}${mid ? "&waypoints=" + encodeURIComponent(mid) : ""}`;
+  }
+  // Nearest-neighbour from the first stop: good enough for a handful of places.
+  function optimise(t) {
+    const ps = tripPlaces(t); if (ps.length < 3) return;
+    const out = [ps.shift()];
+    while (ps.length) { const last = out[out.length - 1]; ps.sort((a, b) => km(last, a) - km(last, b)); out.push(ps.shift()); }
+    t.ids = out.map((p) => p.id);
+  }
+  $("#btnTrips").onclick = () => openTrips();
+  function openTrips() {
+    const trips = [...state.trips].sort((a, b) => (a.date || "9").localeCompare(b.date || "9"));
+    openModal(`<div class="modal-head"><h2>🗓 Day trips</h2><button data-close>✕</button></div>
+      <p>Plan a day out: add places from a place's panel (<b>Add to a trip</b>), then put them in order and open the route in Google Maps.</p>
+      <p><button class="primary" id="tripNew">＋ New trip</button></p>
+      ${trips.map((t) => { const ps = tripPlaces(t); return `<div class="entry"><h3 data-trip="${t.id}">${esc(t.name)}</h3>
+        <div class="meta">${esc(t.date || "no date")} · ${ps.length} stop${ps.length === 1 ? "" : "s"} · ${fmtKm(tripKm(ps))} as the crow flies</div></div>`; }).join("") || "<p>No trips yet.</p>"}`);
+    $("#tripNew").onclick = () => {
+      const name = prompt("Name this day trip:", "Day trip"); if (!name) return;
+      const t = { id: "t-" + uid(), name, date: "", ids: [], t: Date.now() }; state.trips.push(t); save(); openTrip(t.id);
+    };
+    $("#modalBody").onclick = (e) => { const h = e.target.closest("[data-trip]"); if (h) openTrip(h.dataset.trip); };
+  }
+  function openTrip(tid) {
+    const t = state.trips.find((x) => x.id === tid); if (!t) return openTrips();
+    const ps = tripPlaces(t);
+    openModal(`<div class="modal-head"><h2>🗓 <input type="text" id="tripName" value="${esc(t.name)}" class="inline"></h2><button data-close>✕</button></div>
+      <p><label class="lbl">Date</label><input type="date" id="tripDate" value="${esc(t.date || "")}"></p>
+      <ol class="stops">${ps.map((p, i) => `<li><span><b>${esc(p.name)}</b><small>${esc(p.city || "")}${i ? ` · ${fmtKm(km(ps[i - 1], p))} from previous` : ""}</small></span>
+        <span class="links"><button data-mv="${i}" data-d="-1" ${i ? "" : "disabled"}>↑</button><button data-mv="${i}" data-d="1" ${i < ps.length - 1 ? "" : "disabled"}>↓</button><button data-rm="${i}">✕</button></span></li>`).join("") || "<p>No stops yet. Open a place and use <b>Add to a trip</b>.</p>"}</ol>
+      <p class="meta">${ps.length} stops · ${fmtKm(tripKm(ps))} as the crow flies${ps.length > 10 ? " · Google Maps shows the first 10 stops" : ""}</p>
+      <p class="links">
+        <button id="tripShow" ${ps.length ? "" : "disabled"}>🗺 Show on map</button>
+        <button id="tripOpt" ${ps.length > 2 ? "" : "disabled"}>✨ Shortest order</button>
+        ${ps.length > 1 ? `<a target="_blank" rel="noopener" href="${gmapsRoute(ps)}">Route in Google Maps ↗</a>` : ""}
+        <button id="tripBack">← All trips</button>
+        <button id="tripDel" class="danger">Delete trip</button></p>`);
+    const touch = () => { t.t = Date.now(); save(); };
+    $("#tripName").onchange = (e) => { t.name = e.target.value.trim() || t.name; touch(); };
+    $("#tripDate").onchange = (e) => { t.date = e.target.value; touch(); };
+    $("#tripShow").onclick = () => { closeModal(); det.hidden = true; selected = null; drawTrip(t); };
+    $("#tripOpt").onclick = () => { optimise(t); touch(); openTrip(t.id); };
+    $("#tripBack").onclick = () => openTrips();
+    $("#tripDel").onclick = () => { if (!confirm(`Delete "${t.name}"?`)) return; state.trips = state.trips.filter((x) => x !== t); state.tomb.trips.push(t.id); save(); clearTrip(); openTrips(); };
+    $("#modalBody").onclick = (e) => {
+      const b = e.target.closest("[data-mv],[data-rm]"); if (!b) return;
+      if (b.dataset.rm) t.ids.splice(+b.dataset.rm, 1);
+      else { const i = +b.dataset.mv, j = i + +b.dataset.d; [t.ids[i], t.ids[j]] = [t.ids[j], t.ids[i]]; }
+      touch(); openTrip(t.id);
+    };
+  }
+
   // Journal: visited places with reviews, newest first
   $("#btnJournal").onclick = async () => {
     const vis = allPlaces().filter((p) => state.user[p.id]?.visited || state.user[p.id]?.review)
@@ -405,7 +631,7 @@
       ${vis.length ? "" : "<p>Nothing here yet. Tick <b>Visited</b> on a place and write a few lines — it'll show up here.</p>"}
       ${vis.map((p) => { const x = state.user[p.id]; return `<div class="entry">
         <h3 data-open="${p.id}">${esc(p.name)} ${x.rating ? `<span style="color:var(--want)">${"★".repeat(x.rating)}</span>` : ""}</h3>
-        <div class="meta">${esc(x.date || "no date")} · ${esc([p.city, p.country].filter(Boolean).join(", "))} · ${esc(cat(p.category).label)}</div>
+        <div class="meta">${esc(x.date || "no date")} · ${esc([p.city, p.country].filter(Boolean).join(", "))} · ${esc(cat(p.category).label)}${(x.tags || []).map((t) => ` <span class="tag">${esc(t)}</span>`).join("")}</div>
         ${x.review ? `<p>${esc(x.review)}</p>` : ""}
         <div class="thumbs">${(byPlace[p.id] || []).map((r) => `<img src="${URL.createObjectURL(r.blob)}" data-lb>`).join("")}</div></div>`; }).join("")}`);
     $("#modalBody").onclick = (e) => {
@@ -418,8 +644,8 @@
   $("#btnBackup").onclick = async () => {
     const n = (await allPhotos()).length;
     openModal(`<div class="modal-head"><h2>💾 Backup & export</h2><button data-close>✕</button></div>
-      <p>Your ticks, reviews and photos are stored <b>only in this browser on this device</b> — nobody visiting the site can see them.
-      Download a backup regularly (and to move to another phone/computer).</p>
+      <p>${window.TroglogSync?.signedIn() ? "Your journal is synced privately to your account, and a copy is kept on this device." : "Your ticks, reviews and photos are stored <b>only in this browser on this device</b> — nobody visiting the site can see them. Turn on <b>☁ Sync</b> to keep all your devices up to date, or move them with a backup."}
+      A backup file is still a good extra safety net.</p>
       <p><button class="primary" id="bkExport">⬇ Download full backup (.json, ${n} photo${n === 1 ? "" : "s"})</button></p>
       <p><button id="bkImport">⬆ Restore from backup…</button></p>
       <h3>Export for other apps</h3>
@@ -432,7 +658,7 @@
     $("#bkImport").onclick = () => $("#importInput").click();
     $("#exKml").onclick = () => download("my-places.kml", toKML(allPlaces().filter(matches)), "application/vnd.google-earth.kml+xml");
     $("#exCsv").onclick = () => download("my-places.csv", toCSV(allPlaces().filter(matches)), "text/csv");
-    $("#bkUnhide").onclick = () => { state.hidden = []; save(); closeModal(); buildFilterUI(); render(); };
+    $("#bkUnhide").onclick = () => { state.hidden = []; state.hiddenT = Date.now(); save(); closeModal(); buildFilterUI(); render(); };
     $("#bkTheme").onclick = () => {
       const dark = matchMedia("(prefers-color-scheme: dark)").matches;
       const cur = document.documentElement.dataset.theme || (dark ? "dark" : "light");
@@ -440,16 +666,17 @@
       try { localStorage.setItem("travel-journal.theme", document.documentElement.dataset.theme); } catch {}
     };
     $("#bkWipe").onclick = async () => {
-      if (!confirm("Erase all ticks, reviews and photos on this device? Download a backup first!")) return;
+      if (!confirm("Erase all ticks, reviews and photos on this device? (Your synced account copy is kept.) Download a backup first!")) return;
       if (prompt('Type ERASE to confirm') !== "ERASE") return;
-      state = { user: {}, custom: [], hidden: [] }; save(); await clearPhotos(); closeModal(); buildFilterUI(); render();
+      window.TroglogSync?.signOut(true);
+      state = blank(); seedDefaults(); save(); await clearPhotos(); closeModal(); buildFilterUI(); render();
     };
   };
 
   async function exportBackup() {
     const photos = await allPhotos();
     const out = { app: "travel-journal", version: 1, exportedAt: new Date().toISOString(), state,
-      photos: await Promise.all(photos.map(async (r) => ({ placeId: r.placeId, caption: r.caption, added: r.added, data: await blobToDataURL(r.blob) }))) };
+      photos: await Promise.all(photos.map(async ({ id, blob, ...r }) => ({ ...r, data: await blobToDataURL(blob) }))) };
     download(`troglog-backup-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(out), "application/json");
   }
 
@@ -459,9 +686,9 @@
       const data = JSON.parse(await f.text());
       if (data.app !== "travel-journal") throw new Error("Not a Travel Journal backup file.");
       if (!confirm(`Restore backup from ${data.exportedAt?.slice(0, 10)}? This REPLACES what's on this device.`)) return;
-      state = { user: {}, custom: [], hidden: [], ...data.state }; save();
+      state = normalize(data.state); seedDefaults(); save();
       await clearPhotos();
-      for (const p of data.photos || []) await addPhoto({ placeId: p.placeId, caption: p.caption, added: p.added, blob: await dataURLToBlob(p.data) });
+      for (const { data: d, ...p } of data.photos || []) await addPhoto({ ...p, blob: await dataURLToBlob(d) });
       closeModal(); buildFilterUI(); render(); alert("Restored ✓");
     } catch (err) { alert("Restore failed: " + err.message); }
   });
@@ -483,9 +710,9 @@
   }
   function toCSV(list) {
     const q = (s) => `"${String(s ?? "").replace(/"/g, '""')}"`;
-    return "Name,Category,City,Country,Latitude,Longitude,Want,Visited,Date,Rating,Review\n" + list.map((p) => {
+    return "Name,Category,City,Country,Latitude,Longitude,Want,Visited,Date,Rating,Tags,Review\n" + list.map((p) => {
       const s = state.user[p.id] || {};
-      return [p.name, cat(p.category).label, p.city, p.country, p.lat, p.lng, s.want ? "yes" : "", s.visited ? "yes" : "", s.date, s.rating, s.review].map(q).join(",");
+      return [p.name, cat(p.category).label, p.city, p.country, p.lat, p.lng, s.want ? "yes" : "", s.visited ? "yes" : "", s.date, s.rating, (s.tags || []).join("; "), s.review].map(q).join(",");
     }).join("\n");
   }
 
@@ -497,6 +724,24 @@
   });
   $("#countryFilter").onchange = (e) => { filt.country = e.target.value; buildFilterUI(); render(); };
   $("#cityFilter").onchange = (e) => { filt.city = e.target.value; render(); fitVisible(); };
+  $("#tagFilter").onchange = (e) => { filt.tag = e.target.value; render(); };
+  let hereMarker = null;
+  $("#btnNear").onclick = () => {
+    const b = $("#btnNear");
+    if (filt.sort === "near") { filt.sort = "name"; b.classList.remove("on"); render(); return; }
+    if (!navigator.geolocation) return alert("This browser can't share your location.");
+    b.textContent = "📍 Locating…";
+    navigator.geolocation.getCurrentPosition((pos) => {
+      here = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      filt.sort = "near"; b.classList.add("on"); b.textContent = "📍 Near me";
+      hereMarker?.remove();
+      hereMarker = L.circleMarker([here.lat, here.lng], { radius: 8, color: "#fff", weight: 3, fillColor: "#2563eb", fillOpacity: 1 }).addTo(map).bindTooltip("You are here");
+      render();
+      const near = allPlaces().filter(matches).map((p) => [p.lat, p.lng, km(here, p)]).sort((a, c) => a[2] - c[2]).slice(0, 5);
+      map.fitBounds(L.latLngBounds([[here.lat, here.lng], ...near.map((x) => [x[0], x[1]])]).pad(0.2), { maxZoom: 14 });
+      $("#list").scrollTop = 0;
+    }, (err) => { b.textContent = "📍 Near me"; alert("Couldn't get your location: " + err.message); }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+  };
   $("#catFilter").addEventListener("click", (e) => {
     const b = e.target.closest(".chip"); if (!b) return;
     const k = b.dataset.k; filt.cats.has(k) ? filt.cats.delete(k) : filt.cats.add(k); buildFilterUI(); render();
@@ -521,6 +766,14 @@
     const pts = allPlaces().filter(matches).map((p) => [p.lat, p.lng]);
     if (pts.length) map.fitBounds(L.latLngBounds(pts).pad(0.2), { maxZoom: 14 });
   }
+
+  // Hooks for sync.js
+  window.Troglog = {
+    getState: () => state,
+    setState: (s) => { state = normalize(s); seedDefaults(); try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} buildFilterUI(); render(); if (selected && !det.contains(document.activeElement)) openDetail(selected); },
+    photos: { all: allPhotos, put: putPhoto, add: (r) => tx("readwrite", (s) => s.add(r)), remove: (id) => tx("readwrite", (s) => s.delete(id)) },
+    openModal, closeModal, esc,
+  };
 
   try { const t = localStorage.getItem("travel-journal.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
   buildFilterUI();

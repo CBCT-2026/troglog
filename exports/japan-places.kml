@@ -12,6 +12,7 @@
 <Style id="relax"><IconStyle><color>ffb29108</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
 <Style id="shopping"><IconStyle><color>ff048aca</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
 <Style id="food"><IconStyle><color>ff0da365</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
+<Style id="stay"><IconStyle><color>ffe5464f</color><Icon><href>http://maps.google.com/mapfiles/kml/paddle/wht-blank.png</href></Icon></IconStyle></Style>
 <Folder><name>Yokai &amp; Folklore</name>
 <Placemark><name>Yokai Yashiki (Monster &amp; Stone Museum)</name><description>Folk monsters of the Iya Valley plus the region's unique geology, at Michi-no-Eki Oboke.
 Miyoshi (Iya Valley), Tokushima</description><styleUrl>#yokai</styleUrl><Point><coordinates>133.7685,33.8746,0</coordinates></Point></Placemark>
@@ -214,5 +215,21 @@ Chikusa, Nagoya, Aichi</description><styleUrl>#food</styleUrl><Point><coordinate
 <Placemark><name>Sushiro Nagoya Shinsakae</name><description>Conveyor-belt sushi.
 Shinsakae, Nagoya, Aichi
 (approximate location)</description><styleUrl>#food</styleUrl><Point><coordinates>136.923,35.1685,0</coordinates></Point></Placemark>
+</Folder>
+<Folder><name>Remote Stays</name>
+<Placemark><name>Kiso Valley</name><description>Forested valley of Edo-era Nakasendo post towns (Narai, Kiso-Fukushima, Tsumago); stay in a traditional minshuku.
+Kiso (Nakasendo post towns), Nagano
+(approximate location)</description><styleUrl>#stay</styleUrl><Point><coordinates>137.693,35.8436,0</coordinates></Point></Placemark>
+<Placemark><name>Mount Asama</name><description>Active volcano on the Nagano–Gunma border; base yourself in Karuizawa or the Asama highlands.
+Karuizawa / Tsumagoi, Nagano
+(approximate location)</description><styleUrl>#stay</styleUrl><Point><coordinates>138.523,36.4063,0</coordinates></Point></Placemark>
+<Placemark><name>Toyone Village Hall</name><description>Tiny mountain village in the far north-east of Aichi.
+Toyone, Aichi
+(approximate location)</description><styleUrl>#stay</styleUrl><Point><coordinates>137.738,35.135,0</coordinates></Point></Placemark>
+<Placemark><name>Shitara Village</name><description>Rural Okumikawa town in the Aichi mountains.
+Shitara, Aichi
+(approximate location)</description><styleUrl>#stay</styleUrl><Point><coordinates>137.5625,35.0901,0</coordinates></Point></Placemark>
+<Placemark><name>Shirakawa-go</name><description>UNESCO village of thatched gassho-zukuri farmhouses; some take overnight guests.
+Shirakawa, Gifu</description><styleUrl>#stay</styleUrl><Point><coordinates>136.906,36.2577,0</coordinates></Point></Placemark>
 </Folder>
 </Document></kml>

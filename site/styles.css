@@ -133,3 +133,26 @@ dialog::backdrop { background: rgba(0,0,0,.45); }
   .actions button { padding: 5px 8px; font-size: 13px; }
   .bars .b { grid-template-columns: 120px 1fr 48px; }
 }
+
+/* tags, trips, sync */
+.tag { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; padding: 1px 7px; border-radius: 99px; background: var(--chip); border: 1px solid var(--line); color: var(--ink); }
+.tag button { border: 0; background: none; padding: 0 0 0 2px; font-size: 10px; color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.tags input { flex: 1; min-width: 160px; }
+.hint { font-size: 12px; color: var(--muted); margin-top: 4px; }
+#btnNear.on { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.trip-ctl { background: var(--panel); box-shadow: var(--shadow); font-size: 12px; font-weight: 600; }
+.stop { width: 24px; height: 24px; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); background: #dc2626; border: 2px solid #fff; box-shadow: 0 1px 4px rgba(0,0,0,.4); display: grid; place-items: center; }
+.stop span { transform: rotate(45deg); color: #fff; font-weight: 700; font-size: 11px; }
+.stops { padding-left: 22px; }
+.stops li { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 6px 0; border-bottom: 1px solid var(--line); }
+.stops li small { display: block; color: var(--muted); }
+.stops .links button { padding: 3px 8px; }
+input.inline { width: auto; font-size: inherit; font-weight: 700; border-color: transparent; background: transparent; padding: 2px 4px; }
+input.inline:focus { border-color: var(--line); }
+#syncState { font-size: 11px; }
+.lock { position: fixed; inset: 0; z-index: 5000; background: var(--bg); display: grid; place-items: center; padding: 16px; }
+.lock form { background: var(--panel); padding: 24px; border-radius: 14px; box-shadow: var(--shadow); width: min(360px, 100%); display: grid; gap: 10px; }
+.lock h1 { margin: 0; font-size: 22px; }
+input[type=email], input[type=password] { width: 100%; padding: 7px 9px; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+.ok { color: var(--visited); } .err { color: var(--accent); }

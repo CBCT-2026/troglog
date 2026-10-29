@@ -59,6 +59,11 @@ window.CATEGORIES = {
   "label": "Food & Drink",
   "color": "#65a30d",
   "icon": "🍣"
+ },
+ "stay": {
+  "label": "Remote Stays",
+  "color": "#4f46e5",
+  "icon": "🛖"
  }
 };
 window.SEED_PLACES = [
@@ -733,6 +738,81 @@ window.SEED_PLACES = [
   "note": "Shell-midden park with a giant statue of the clam-eating giant Daidarabotchi.",
   "source": "doc-image",
   "approx": false
+ },
+ {
+  "id": "jp-kiso-valley",
+  "name": "Kiso Valley",
+  "city": "Kiso (Nakasendo post towns)",
+  "prefecture": "Nagano",
+  "region": "Chubu",
+  "country": "Japan",
+  "lat": 35.8436,
+  "lng": 137.693,
+  "category": "stay",
+  "note": "Forested valley of Edo-era Nakasendo post towns (Narai, Kiso-Fukushima, Tsumago); stay in a traditional minshuku.",
+  "source": "added",
+  "approx": true,
+  "want": true
+ },
+ {
+  "id": "jp-mount-asama",
+  "name": "Mount Asama",
+  "city": "Karuizawa / Tsumagoi",
+  "prefecture": "Nagano",
+  "region": "Chubu",
+  "country": "Japan",
+  "lat": 36.4063,
+  "lng": 138.523,
+  "category": "stay",
+  "note": "Active volcano on the Nagano–Gunma border; base yourself in Karuizawa or the Asama highlands.",
+  "source": "added",
+  "approx": true,
+  "want": true
+ },
+ {
+  "id": "jp-toyone-village-hall",
+  "name": "Toyone Village Hall",
+  "city": "Toyone",
+  "prefecture": "Aichi",
+  "region": "Chubu",
+  "country": "Japan",
+  "lat": 35.135,
+  "lng": 137.738,
+  "category": "stay",
+  "note": "Tiny mountain village in the far north-east of Aichi.",
+  "source": "added",
+  "approx": true,
+  "want": true
+ },
+ {
+  "id": "jp-shitara-village",
+  "name": "Shitara Village",
+  "city": "Shitara",
+  "prefecture": "Aichi",
+  "region": "Chubu",
+  "country": "Japan",
+  "lat": 35.0901,
+  "lng": 137.5625,
+  "category": "stay",
+  "note": "Rural Okumikawa town in the Aichi mountains.",
+  "source": "added",
+  "approx": true,
+  "want": true
+ },
+ {
+  "id": "jp-shirakawa-go",
+  "name": "Shirakawa-go",
+  "city": "Shirakawa",
+  "prefecture": "Gifu",
+  "region": "Chubu",
+  "country": "Japan",
+  "lat": 36.2577,
+  "lng": 136.906,
+  "category": "stay",
+  "note": "UNESCO village of thatched gassho-zukuri farmhouses; some take overnight guests.",
+  "source": "added",
+  "approx": false,
+  "want": true
  },
  {
   "id": "jp-hiroshima-peace-memorial-atomic-bomb-dome",

@@ -21,6 +21,7 @@ CATEGORIES = {
     "relax":     {"label": "Onsen & Spa",                 "color": "#0891b2", "icon": "♨️"},
     "shopping":  {"label": "Shopping & Pop Culture",      "color": "#ca8a04", "icon": "🛍️"},
     "food":      {"label": "Food & Drink",                "color": "#65a30d", "icon": "🍣"},
+    "stay":      {"label": "Remote Stays",                "color": "#4f46e5", "icon": "🛖"},
 }
 
 # (name, city, prefecture, lat, lng, category, note, source, approx)
@@ -77,6 +78,12 @@ P = [
     ("Kabosu the Doge Statue", "Sakura", "Chiba", 35.7484, 140.2260, "weird", "Bronze statue of the shiba inu behind the 'Doge' meme (Sakura Furusato Hiroba).", "doc-image", False),
     ("Tomb of the Nue", "Miyakojima, Osaka", "Osaka", 34.7050, 135.5255, "yokai", "Tomb of a chimeric monster whose corpse washed ashore in Osaka.", "doc-image", False),
     ("Ogushi Kaizuka Park", "Mito", "Ibaraki", 36.4170, 140.4740, "history", "Shell-midden park with a giant statue of the clam-eating giant Daidarabotchi.", "doc-image", False),
+    # --- Remote-Japan accommodation destinations (added 2026-10-29) ---
+    ("Kiso Valley", "Kiso (Nakasendo post towns)", "Nagano", 35.8436, 137.6930, "stay", "Forested valley of Edo-era Nakasendo post towns (Narai, Kiso-Fukushima, Tsumago); stay in a traditional minshuku.", "added", True),
+    ("Mount Asama", "Karuizawa / Tsumagoi", "Nagano", 36.4063, 138.5230, "stay", "Active volcano on the Nagano–Gunma border; base yourself in Karuizawa or the Asama highlands.", "added", True),
+    ("Toyone Village Hall", "Toyone", "Aichi", 35.1350, 137.7380, "stay", "Tiny mountain village in the far north-east of Aichi.", "added", True),
+    ("Shitara Village", "Shitara", "Aichi", 35.0901, 137.5625, "stay", "Rural Okumikawa town in the Aichi mountains.", "added", True),
+    ("Shirakawa-go", "Shirakawa", "Gifu", 36.2577, 136.9060, "stay", "UNESCO village of thatched gassho-zukuri farmhouses; some take overnight guests.", "added", False),
     # --- Added by you ---
     ("Hiroshima Peace Memorial (Atomic Bomb Dome)", "Hiroshima", "Hiroshima", 34.3955, 132.4536, "history", "A-Bomb Dome, Peace Memorial Park and Museum.", "added", False),
     ("Nagoya Castle", "Nagoya", "Aichi", 35.1856, 136.8999, "history", "Golden shachihoko and the rebuilt Honmaru Palace.", "added", False),
@@ -122,6 +129,10 @@ REGIONS = {
 }
 
 
+# Pre-ticked as "want to go" until changed in the app
+WANT = {"Kiso Valley", "Mount Asama", "Toyone Village Hall", "Shitara Village", "Shirakawa-go"}
+
+
 def slug(s):
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
 
@@ -138,6 +149,8 @@ def build():
             "country": "Japan", "lat": lat, "lng": lng, "category": cat, "note": note,
             "source": src, "approx": approx,
         })
+        if name in WANT:
+            places[-1]["want"] = True
 
     site = ROOT / "site"; site.mkdir(exist_ok=True)
     (site / "places.js").write_text(

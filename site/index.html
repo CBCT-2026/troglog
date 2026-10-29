@@ -7,6 +7,11 @@
 <title>Troglog</title>
 <meta name="description" content="A troglodyte's log of places explored and places to go.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🦇</text></svg>">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#dc2626">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Troglog">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css">
@@ -19,8 +24,10 @@
   <nav class="actions">
     <button id="btnAdd" class="primary">＋ Add place</button>
     <button id="btnJournal">📔 Journal</button>
+    <button id="btnTrips">🗓 Trips</button>
     <button id="btnStats">📊 Overview</button>
     <button id="btnBackup">💾 Backup</button>
+    <button id="btnSync" title="Private sync across your devices">☁ Sync <span id="syncState"></span></button>
   </nav>
 </header>
 
@@ -37,6 +44,10 @@
       <div class="row">
         <select id="countryFilter"><option value="">All countries</option></select>
         <select id="cityFilter"><option value="">All cities / areas</option></select>
+      </div>
+      <div class="row">
+        <select id="tagFilter" hidden><option value="">All tags</option></select>
+        <button id="btnNear" title="Sort by distance from where you are">📍 Near me</button>
       </div>
       <div class="chips" id="catFilter"></div>
     </div>
@@ -59,7 +70,12 @@
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+<script src="config.js"></script>
 <script src="places.js"></script>
 <script src="app.js"></script>
+<script src="sync.js"></script>
+<script>
+  if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("sw.js");
+</script>
 </body>
 </html>
