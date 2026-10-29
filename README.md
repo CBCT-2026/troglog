@@ -14,13 +14,13 @@ tools/       ← build_data.py (the master place list) and render_overview.py
 - **📍 Near me** sorts the list by distance from where you are.
 - **🗓 Trips**: plan a day out, put the stops in order (or let it find the shortest order) and open the route in Google Maps.
 - **Install as an app**: on your phone, Share → *Add to Home Screen*. It works offline, including map areas you've already looked at.
-- **☁ Sync** (optional): private login and automatic sync across all your devices. See [SETUP-SYNC.md](SETUP-SYNC.md).
+- **☁ Sync** (optional): private login, end-to-end encryption with a passphrase, and automatic sync across all your devices. See [SETUP-SYNC.md](SETUP-SYNC.md).
 - Overview stats, a journal view, backup/restore and KML/CSV export.
 
 ## Privacy model
 - The **place list** (`site/places.js`) and the code are public, because the site is on GitHub Pages.
 - Your **ticks, dates, reviews, tags, trips and photos are never put in this repo**. Without sync they stay in the browser on each device.
-  With sync they're kept in your own Supabase project, which only your login can read.
+  With sync they're encrypted on your device with a passphrase and kept in your own Supabase project, which only your login can reach and only your passphrase can read.
 - `robots` is set to `noindex`, so search engines are asked not to list the site.
 - The map and sync libraries are copied into `site/vendor/`, so no third-party script runs on the page.
 - Signing out keeps the local copy; use **Sign out and erase this device** on a shared computer.
