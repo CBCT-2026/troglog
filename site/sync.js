@@ -7,7 +7,7 @@
   const $ = (s) => document.querySelector(s);
   const esc = T.esc;
   const LOCAL_CFG = "troglog.sync";
-  const LIB = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+  const LIB = "vendor/supabase.js"; // self-hosted so no third-party script can read your data
   const BUCKET = "photos";
   let localCfg = {};
   try { localCfg = JSON.parse(localStorage.getItem(LOCAL_CFG) || "{}"); } catch {}
@@ -147,10 +147,11 @@
   }
   function hideLock() { $(".lock")?.remove(); }
 
-  async function signOut(silent) {
+  async function signOut(silent, wipe) {
     if (!sb || !user) return;
-    if (!silent && !confirm("Sign out on this device? Your journal stays in your account and on this device.")) return;
+    if (!silent && !confirm(wipe ? "Sign out and erase the journal copy on this device? Your account copy is kept." : "Sign out on this device? Your journal stays in your account and on this device.")) return;
     await sb.auth.signOut(); user = null; status();
+    if (wipe) { await T.wipeLocal(); }
     if (!silent && cfg.lockWhenSignedOut) showLock();
   }
 
@@ -181,10 +182,12 @@
     T.openModal(`${head}
       <p>Signed in as <b>${esc(user.email)}</b>. Changes sync automatically a few seconds after you make them.</p>
       <p class="hint">${lastErr ? `<span class="err">${esc(lastErr)}</span>` : lastSync ? "Last synced " + lastSync.toLocaleString() : "Not synced yet."}</p>
-      <p class="links"><button class="primary" id="sNow">Sync now</button><button id="sOut">Sign out</button></p>
+      <p class="links"><button class="primary" id="sNow">Sync now</button><button id="sOut">Sign out</button><button id="sOutWipe">Sign out and erase this device</button></p>
+      <p class="hint">Use "erase this device" on a shared or borrowed computer: signing out alone leaves the local copy in this browser.</p>
       ${localCfg.supabaseUrl ? `<p><button id="sForget" class="danger">Remove sync settings from this device</button></p>` : ""}`);
     $("#sNow").onclick = async () => { $("#sNow").textContent = "Syncing…"; await syncNow(); T.closeModal(); };
     $("#sOut").onclick = async () => { T.closeModal(); await signOut(); };
+    $("#sOutWipe").onclick = async () => { T.closeModal(); await signOut(false, true); };
     $("#sForget") && ($("#sForget").onclick = async () => { await signOut(true); localStorage.removeItem(LOCAL_CFG); location.reload(); });
   };
 

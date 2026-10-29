@@ -22,6 +22,8 @@ tools/       ← build_data.py (the master place list) and render_overview.py
 - Your **ticks, dates, reviews, tags, trips and photos are never put in this repo**. Without sync they stay in the browser on each device.
   With sync they're kept in your own Supabase project, which only your login can read.
 - `robots` is set to `noindex`, so search engines are asked not to list the site.
+- The map and sync libraries are copied into `site/vendor/`, so no third-party script runs on the page.
+- Signing out keeps the local copy; use **Sign out and erase this device** on a shared computer.
 
 ## Hosting
 Every push to `main` publishes `site/` to the `gh-pages` branch (`.github/workflows/pages.yml`), and GitHub Pages serves it at

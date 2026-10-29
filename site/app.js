@@ -773,6 +773,7 @@
     setState: (s) => { state = normalize(s); seedDefaults(); try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} buildFilterUI(); render(); if (selected && !det.contains(document.activeElement)) openDetail(selected); },
     photos: { all: allPhotos, put: putPhoto, add: (r) => tx("readwrite", (s) => s.add(r)), remove: (id) => tx("readwrite", (s) => s.delete(id)) },
     openModal, closeModal, esc,
+    wipeLocal: async () => { state = blank(); seedDefaults(); try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch {} await clearPhotos(); det.hidden = true; selected = null; buildFilterUI(); render(); },
   };
 
   try { const t = localStorage.getItem("travel-journal.theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
